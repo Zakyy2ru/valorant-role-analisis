@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Statistik | VALORANT ROLE ANALISIS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <img src="/static/images/logo-val.png" class="logo-img">
+            <div class="logo-text">VALO<span>RANT</span></div>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            {% if session.get('logged_in') %}
+                {% if session.get('role') == 'admin' %}
+                    <a href="/admin" style="color: #ffb846;">Dashboard Admin</a>
+                {% endif %}
+                <a href="/logout" style="color: #ff4655; margin-left: 20px;">Logout</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+    <div class="container">
+        <div class="predict-wrapper">
+            
+            <div class="predict-form-container">
+                <h2 class="highlight">MASUKKAN STATISTIKMU</h2>
+                <p class="subtitle">Isi data kompetitifmu untuk memulai analisis.</p>
+
+                <form action="/predict" method="POST" class="main-form" id="predictForm">
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>KDA Ratio</label>
+                            <input type="number" step="0.01" name="kda" placeholder="Contoh: 1.25" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Winrate (%)</label>
+                            <input type="number" step="0.1" name="winrate" placeholder="Contoh: 52.5" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Average Combat Score (ACS)</label>
+                            <input type="number" step="any" name="acs" placeholder="Contoh: 237.5" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Kills / Round</label>
+                            <input type="number" step="0.01" name="kill_round" placeholder="Contoh: 0.8" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Assists / Round</label>
+                            <input type="number" step="0.01" name="assist_round" placeholder="Contoh: 0.3" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Deaths / Round</label>
+                            <input type="number" step="0.01" name="death_round" placeholder="Contoh: 0.7" required>
+                        </div>
+                        <div class="input-group">
+                            <label>First Blood / Round</label>
+                            <input type="number" step="0.01" name="first_blood" placeholder="Contoh: 0.2" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Headshot (%)</label>
+                            <input type="number" step="0.1" name="headshot" placeholder="Contoh: 22.4" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Clutch (%)</label>
+                            <input type="number" step="0.1" name="clutch" placeholder="Contoh: 2.4" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-main submit-btn" id="submitBtn">PROSES ANALISIS</button>
+                </form>
+
+                <div id="loadingOverlay" style="display: none; text-align: center; margin-top: 20px;">
+                    <div class="loader"></div>
+                    <p id="loadingText" style="color: #ff4655; font-weight: bold; margin-top: 10px; font-size: 14px; letter-spacing: 1px;">MENGANALISIS PERFORMA...</p>
+                </div>
+            </div>
+
+            <div class="predict-guide-container">
+                <div class="info-card guide-card">
+                    <h3><span class="dot"></span> PANDUAN INPUT DATA</h3>
+                    <p class="desc-text">Ambil data dari profil <strong>Tracker.gg</strong> Anda:</p>
+                    
+                    <div class="guide-steps">
+                        <div class="step">
+                            <span class="step-num">1</span>
+                            <p>Buka <a href="https://tracker.gg/valorant" target="_blank" style="color: #ff4655; text-decoration: none;">Tracker.gg</a></p>
+                        </div>
+                        
+                        <div class="guide-image-box">
+                            <img src="/static/images/tracker-guide.jpg" alt="Panduan Tracker" class="guide-img">
+                            <div class="img-caption">Lihat tab <b>Overview</b> & <b>Show More</b> untuk detail angka</div>
+                        </div>
+
+                        <div class="step">
+                            <span class="step-num">2</span>
+                            <p>Gunakan titik (.) sebagai pemisah desimal (Contoh: 237.5).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        /* CSS Loader (Agar tampilan loading tetap rapi) */
+        .loader {
+            width: 35px;
+            height: 35px;
+            border: 4px solid rgba(255, 70, 85, 0.1);
+            border-left-color: #ff4655;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Layout Dasar asli kamu */
+        .predict-wrapper { display: flex; gap: 40px; align-items: flex-start; margin-top: 30px; }
+        .predict-form-container { flex: 1.5; background: rgba(255, 255, 255, 0.03); padding: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .predict-guide-container { flex: 1; position: sticky; top: 100px; }
+
+        /* Form Grid asli kamu */
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { font-size: 13px; color: #8b97a3; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-group input { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 12px; color: white; border-radius: 4px; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: #ff4655; background: rgba(255, 70, 85, 0.05); box-shadow: 0 0 10px rgba(255, 70, 85, 0.2); }
+
+        .submit-btn { width: 100%; margin-top: 20px; font-weight: bold; letter-spacing: 1px; }
+
+        /* Guide Card asli kamu */
+        .guide-card { border-left: 4px solid #ff4655 !important; background: rgba(21, 30, 39, 0.98) !important; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .guide-steps { margin-top: 15px; }
+        .step { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 14px; color: #ece8e1; }
+        .step-num { background: #ff4655; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; flex-shrink: 0; }
+        
+        .guide-image-box { margin: 15px 0; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: #000; }
+        .guide-img { width: 100%; display: block; opacity: 0.9; transition: 0.3s; }
+        .guide-img:hover { opacity: 1; transform: scale(1.02); }
+        .img-caption { font-size: 11px; color: #8b97a3; text-align: center; padding: 10px; background: rgba(0,0,0,0.8); border-top: 1px solid rgba(255,255,255,0.05); }
+
+        /* Responsive asli kamu */
+        @media (max-width: 900px) {
+            .predict-wrapper { flex-direction: column; }
+            .input-grid { grid-template-columns: 1fr; }
+            .predict-guide-container { position: static; width: 100%; }
+        }
+    </style>
+
+    <script>
+        const predictForm = document.getElementById('predictForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
+
+        const messages = ["SCANNING PERFORMA...", "KALKULASI KDA...", "ANALISIS GAMEPLAY...", "PREDIKSI ROLE..."];
+
+        predictForm.addEventListener('submit', function() {
+            submitBtn.style.display = 'none'; // Sembunyikan tombol biar gak double click
+            loadingOverlay.style.display = 'block'; // Munculkan animasi loading
+
+            let i = 0;
+            setInterval(() => {
+                i = (i + 1) % messages.length;
+                loadingText.innerText = messages[i];
+            }, 600);
+        });
+    </script>
+
+</body>
+</html>

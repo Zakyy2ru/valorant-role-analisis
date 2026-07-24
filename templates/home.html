@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valorant Role Analisis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* CSS Khusus agar popup muncul tepat di atas card */
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .role-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .role-card:hover {
+            background: rgba(255, 70, 85, 0.1);
+            border-color: #ff4655;
+            transform: translateY(-5px);
+        }
+
+        /* Styling Tooltip Popup */
+        .role-popup {
+            display: none;
+            position: absolute;
+            bottom: 115%; /* Muncul di atas card */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            background: #1f2a35;
+            padding: 20px;
+            border: 2px solid #ff4655;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            z-index: 100;
+            text-align: left;
+            animation: fadeInPos 0.3s ease-out;
+        }
+
+        /* Panah bawah popup */
+        .role-popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px;
+            border-style: solid;
+            border-color: #ff4655 transparent transparent transparent;
+        }
+
+        .role-popup h3 {
+            font-family: 'Oswald', sans-serif;
+            color: #ff4655;
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .role-popup p {
+            font-size: 13px;
+            color: #ece8e1;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        @keyframes fadeInPos {
+            from { opacity: 0; transform: translate(-50%, 10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        @media (max-width: 850px) {
+            .role-grid { grid-template-columns: 1fr 1fr; }
+            .role-popup { width: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <img src="/static/images/logo-val.png" class="logo-img">
+            <div class="logo-text">VALO<span>RANT</span></div>
+        </div>
+        <div class="nav-links">
+            
+            {% if session.get('logged_in') %}
+                {% if session.get('role') == 'admin' %}
+                    <a href="/admin" style="color: #ffb846;">DASHBOARD ADMIN</a>
+                {% endif %}
+                <a href="/logout" style="color: #ff4655; border: 1px solid #ff4655; padding: 5px 15px;">LOGOUT</a>
+            {% else %}
+                <a href="/login" class="btn-login">LOGIN</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+    <div class="container">
+        <div class="hero-container" style="justify-content: flex-start; align-items: center; min-height: 450px;">
+            <div class="hero-text" style="max-width: 650px;">
+                <h1>VALORANT <span class="highlight">ROLE</span> <br> ANALISIS</h1>
+                <p class="subtitle">Gunakan kekuatan Kecerdasan Buatan untuk menemukan peran terbaikmu di medan tempur berdasarkan statistik kompetitifmu.</p>
+                <div style="margin-top: 30px;">
+                    <a href="/predict_page" class="btn-main">MULAI ANALISIS SEKARANG</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="role-preview-container">
+            <h2 style="font-family: 'Oswald', sans-serif; text-align: center; margin-bottom: 40px; letter-spacing: 2px;">INFORMASI ROLE</h2>
+            
+            <div class="role-grid">
+                <div class="role-card" onclick="togglePopup('duelist', event)">
+                    <img src="/static/images/icon-duelist.png" alt="Duelist" width="60">
+                    <h4>DUELIST</h4>
+                    <p style="font-size: 10px; color: #ffffff; margin-top: 10px;">Klik untuk info</p>
+                    <div id="pop-duelist" class="role-popup">
+                        <h3>DUELIST</h3>
+                        <p>Berfungsi sebagai penyerang utama yang bertugas untuk mengeliminasi musuh secara langsung.</p>
+                    </div>
+                </div>
+
+                <div class="role-card" onclick="togglePopup('initiator', event)">
+                    <img src="/static/images/icon-initiator.png" alt="Initiator" width="60">
+                    <h4>INITIATOR</h4>
+                    <p style="font-size: 10px; color: #ffffff; margin-top: 10px;">Klik untuk info</p>
+                    <div id="pop-initiator" class="role-popup">
+                        <h3>INITIATOR</h3>
+                        <p>Bertanggung jawab membuka jalan bagi tim serta mengumpulkan informasi terkait posisi lawan.</p>
+                    </div>
+                </div>
+
+                <div class="role-card" onclick="togglePopup('controller', event)">
+                    <img src="/static/images/icon-controller.png" alt="Controller" width="60">
+                    <h4>CONTROLLER</h4>
+                    <p style="font-size: 10px; color: #ffffff; margin-top: 10px;">Klik untuk info</p>
+                    <div id="pop-controller" class="role-popup">
+                        <h3>CONTROLLER</h3>
+                        <p>Berperan dalam mengendalikan kondisi pertempuran, seperti membatasi pergerakan musuh dan menciptakan ruang aman bagi tim.</p>
+                    </div>
+                </div>
+
+                <div class="role-card" onclick="togglePopup('sentinel', event)">
+                    <img src="/static/images/icon-sentinel.png" alt="Sentinel" width="60">
+                    <h4>SENTINEL</h4>
+                    <p style="font-size: 10px; color: #ffffff; margin-top: 10px;">Klik untuk info</p>
+                    <div id="pop-sentinel" class="role-popup">
+                        <h3>SENTINEL</h3>
+                        <p>Memiliki tugas utama dalam menjaga area tertentu serta mempertahankan posisi dari serangan lawan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tournament-section" style="margin-top: 80px; padding-bottom: 50px;">
+    <h2 style="font-family: 'Oswald', sans-serif; text-align: center; margin-bottom: 40px; letter-spacing: 2px;">
+        INFO <span class="highlight">TOURNAMENT</span>
+    </h2>
+    
+    <div class="tournament-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        {% if tournaments %}
+{% for t in tournaments %}
+<div class="t-card" style="background: rgba(255, 255, 255, 0.05); border-left: 4px solid #ff4655; padding: 20px; margin-bottom: 20px;">
+    <h3 style="color: #ff4655; font-family: 'Oswald', sans-serif;">{{ t.nama_tournament }}</h3>
+    <p style="color: #ece8e1; font-size: 14px;">{{ t.deskripsi }}</p>
+    
+    {% if t.link_tournament %}
+        <a href="{{ t.link_tournament }}" target="_blank" style="color: #ffffff; text-decoration: none; font-weight: bold; font-size: 13px;">
+            LIHAT DETAIL RESMI →
+        </a>
+    {% endif %}
+    
+    <br>
+    <small style="color: #8b97a3;">Diposting pada: {{ t.tanggal_dibuat }}</small>
+</div>
+{% endfor %}
+        {% else %}
+            <p style="text-align: center; color: #8b97a3;">Belum ada informasi turnamen terbaru.</p>
+        {% endif %}
+    </div>
+</div>
+
+    <script>
+        function togglePopup(role, event) {
+            // Stop event agar tidak trigger window.onclick
+            event.stopPropagation();
+
+            // Sembunyikan semua popup terlebih dahulu
+            const allPopups = document.querySelectorAll('.role-popup');
+            allPopups.forEach(p => p.style.display = 'none');
+
+            // Tampilkan popup yang diklik
+            const target = document.getElementById('pop-' + role);
+            target.style.display = 'block';
+        }
+
+        // Klik di mana saja untuk menutup popup
+        window.onclick = function() {
+            const allPopups = document.querySelectorAll('.role-popup');
+            allPopups.forEach(p => p.style.display = 'none');
+        }
+    </script>
+
+</body>
+</html>

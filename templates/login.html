@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Valorant Role Analisis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f1923; /* Dark Valorant Blue */
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background-color: #1f2326;
+            border: 1px solid #ff4655; /* Valorant Red */
+            padding: 30px;
+            border-radius: 0; /* Valorant identik dengan sudut tajam */
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .btn-valorant {
+            background-color: #ff4655;
+            color: white;
+            border: none;
+            border-radius: 0;
+            padding: 10px;
+            font-weight: bold;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .btn-valorant:hover {
+            background-color: #ece8e1;
+            color: #0f1923;
+        }
+        .form-control {
+            background-color: #383e42;
+            border: none;
+            color: white;
+            border-radius: 0;
+        }
+        .form-control:focus {
+            background-color: #4b5257;
+            color: white;
+            border: 1px solid #ff4655;
+            box-shadow: none;
+        }
+        .valorant-logo {
+            color: #ff4655;
+            font-weight: 900;
+            letter-spacing: 5px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="valorant-logo">
+        <h1>VALORANT</h1>
+        <p style="font-size: 0.8rem; color: #ece8e1;">SISTEM PREDIKSI ROLE</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} py-2" style="font-size: 0.8rem; border-radius: 0;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form action="/login" method="POST">
+        <div class="mb-3">
+            <label class="form-label text-uppercase" style="font-size: 0.7rem;">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Enter your username" required>
+        </div>
+        <div class="mb-4">
+            <label class="form-label text-uppercase" style="font-size: 0.7rem;">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn btn-valorant text-uppercase">Log In</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 13px; color: #8b97a3;">
+    Belum punya akun? <a href="/register" style="color: #ff4655; text-decoration: none; font-weight: bold;">BUAT AKUN BARU</a>
+</p>
+
+        <div style="margin-top: 20px; text-align: center;">
+    <a href="/" style="color: #8b97a3; text-decoration: none; font-size: 13px; font-family: 'Oswald', sans-serif;">
+        ← KEMBALI KE HALAMAN UTAMA
+    </a>
+</div>
+    
+    <div class="mt-4 text-center">
+        <p style="font-size: 0.7rem; color: #8b8e90;">&copy; 2026 DZAKYPUTRAW - Project</p>
+    </div>
+</div>
+
+</body>
+</html>
